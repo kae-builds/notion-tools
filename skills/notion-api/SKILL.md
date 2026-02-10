@@ -14,9 +14,8 @@ Direct Notion API access via Python CLI. Works independently of Notion MCP serve
 
 ## Quick Start
 
-The script at `scripts/notion_api.py` handles all Notion API operations. Token is auto-discovered
-from the Notion plugin cache (`~/.claude/plugins/cache/claude-plugins-official/Notion/*/.mcp.json`)
-or `NOTION_TOKEN` environment variable.
+The script at `scripts/notion_api.py` handles all Notion API operations.
+Token is read from `NOTION_TOKEN` environment variable. Set it in your project's `.claude/settings.local.json` env section.
 
 ## Commands
 

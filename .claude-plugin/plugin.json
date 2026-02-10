@@ -1,0 +1,7 @@
+{
+  "name": "notion-tools",
+  "version": "1.0.0",
+  "description": "Notion API直接連携 - ページ取得・検索・コメント・プロパティ操作",
+  "author": "falcon",
+  "skills": "./skills/"
+}

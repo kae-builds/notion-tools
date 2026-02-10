@@ -11,14 +11,14 @@ Usage:
     python notion_api.py update <url_or_id> <json>  # Update page properties
     python notion_api.py db <database_id> [filter_json] # Query database
 
-Token is auto-discovered from Notion plugin cache or NOTION_TOKEN env var.
+Token is read from NOTION_TOKEN environment variable.
+Set it in your project's .claude/settings.local.json env section.
 """
 
 import json
 import os
 import re
 import sys
-import glob
 import urllib.request
 import urllib.error
 
@@ -27,60 +27,12 @@ BASE_URL = "https://api.notion.com/v1"
 
 
 def find_token():
-    """Auto-discover Notion token from .mcp.json or environment.
-
-    Search order:
-      1. NOTION_TOKEN environment variable
-      2. Project .mcp.json (walk up from CWD)
-      3. ~/.claude/mcp.json (global)
-      4. Notion plugin cache (fallback)
-    """
+    """Read NOTION_TOKEN from environment variable."""
     token = os.environ.get("NOTION_TOKEN")
     if token:
         return token
-
-    def extract_from_mcp_json(path):
-        """Extract Notion token from an .mcp.json file."""
-        try:
-            with open(path) as f:
-                data = json.load(f)
-            servers = data.get("mcpServers", {})
-            for name, cfg in servers.items():
-                if "notion" in name.lower():
-                    t = cfg.get("env", {}).get("NOTION_TOKEN")
-                    if t:
-                        return t
-        except (json.JSONDecodeError, KeyError, FileNotFoundError):
-            pass
-        return None
-
-    # 1. Walk up from CWD looking for .mcp.json
-    cwd = os.getcwd()
-    while True:
-        mcp_path = os.path.join(cwd, ".mcp.json")
-        t = extract_from_mcp_json(mcp_path)
-        if t:
-            return t
-        parent = os.path.dirname(cwd)
-        if parent == cwd:
-            break
-        cwd = parent
-
-    # 2. Global ~/.claude/mcp.json
-    t = extract_from_mcp_json(os.path.expanduser("~/.claude/mcp.json"))
-    if t:
-        return t
-
-    # 3. Notion plugin cache (fallback)
-    for path in sorted(glob.glob(
-        os.path.expanduser("~/.claude/plugins/cache/claude-plugins-official/Notion/*/.mcp.json")
-    ), reverse=True):
-        t = extract_from_mcp_json(path)
-        if t:
-            return t
-
-    print("Error: Notion token not found.", file=sys.stderr)
-    print("Add notion server to .mcp.json or set NOTION_TOKEN env var.", file=sys.stderr)
+    print("Error: NOTION_TOKEN not found in environment.", file=sys.stderr)
+    print("Set NOTION_TOKEN in .claude/settings.local.json env section.", file=sys.stderr)
     sys.exit(1)
 
 
