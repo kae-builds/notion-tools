@@ -85,6 +85,18 @@ The script accepts Notion URLs, 32-char hex IDs, or formatted UUIDs:
 2. Run `comment` command
 3. Verify success from output
 
+### When constructing blocks via API (append, etc.)
+
+rich_text 配列ではプレーンテキストのみ使用する。`annotations` を含めるとAPIが拒否する。
+
+```json
+// ✅ 正しい
+{"type": "paragraph", "paragraph": {"rich_text": [{"type": "text", "text": {"content": "Hello"}}]}}
+
+// ❌ 間違い（annotations を含めない）
+{"type": "paragraph", "paragraph": {"rich_text": [{"type": "text", "text": {"content": "Hello"}, "annotations": {"bold": true}}]}}
+```
+
 ### When updating properties
 
 1. First run `props` to see current values
